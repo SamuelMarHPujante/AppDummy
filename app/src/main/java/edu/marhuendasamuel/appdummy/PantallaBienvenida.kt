@@ -75,6 +75,3 @@ fun PantallaBienvenida(onEntrar: () -> Unit) {
         }
     }
 }
-
-/*PantallaBienvenida(onEntrar: () -> Unit) en su propio fichero, con icono decorativo
-(Icons.Default.Book), título, subtítulo y un OutlinedTextField para el nombre del usuario.*/
