@@ -118,7 +118,6 @@ fun PantallaListado() {
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
-            // Barra de búsqueda
             OutlinedTextField(
                 value = busqueda,
                 onValueChange = { busqueda = it },
@@ -137,7 +136,6 @@ fun PantallaListado() {
                 singleLine = true
             )
 
-            // Chips de autores
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
