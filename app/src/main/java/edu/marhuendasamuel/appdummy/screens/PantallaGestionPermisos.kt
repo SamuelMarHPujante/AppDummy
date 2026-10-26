@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.tooling.preview.Preview
 
 sealed class EstadoPermiso {
     data object Concedido : EstadoPermiso()
@@ -108,5 +109,13 @@ fun PantallaGestionPermisos() {
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PantallaPermisosPreview() {
+    MaterialTheme {
+        PantallaGestionPermisos()
     }
 }

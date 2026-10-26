@@ -267,3 +267,11 @@ fun ItemLibro(libro: LibroUI, onToggleLeido: (Int) -> Unit, onToggleFavorito: (I
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun PantallaListadoPreview() {
+    MaterialTheme {
+        PantallaListado()
+    }
+}
