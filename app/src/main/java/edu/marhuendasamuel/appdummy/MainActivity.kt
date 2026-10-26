@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import edu.marhuendasamuel.appdummy.screens.PantallaListado
+import edu.marhuendasamuel.appdummy.screens.PantallaGestionPermisos
 
 class MainActivity : ComponentActivity() {
     @Preview(showBackground = true)
@@ -20,6 +21,14 @@ class MainActivity : ComponentActivity() {
     fun PantallaListadoPreview() {
         MaterialTheme {
             PantallaListado()
+        }
+    }
+
+    @Preview(showBackground = true, showSystemUi = true)
+    @Composable
+    fun PantallaPermisosPreview() {
+        MaterialTheme {
+            PantallaGestionPermisos()
         }
     }
 }
