@@ -1,6 +1,6 @@
 package edu.marhuendasamuel.appdummy.data.model
 
-data class LibroUI(
+data class Libro(
     val id: Int = 0,
     val titulo: String = "",
     val autor: String = "",

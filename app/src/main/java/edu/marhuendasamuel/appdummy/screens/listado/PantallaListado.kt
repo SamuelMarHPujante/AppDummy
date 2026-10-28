@@ -22,7 +22,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import edu.marhuendasamuel.appdummy.R
-import edu.marhuendasamuel.appdummy.data.model.LibroUI
+import edu.marhuendasamuel.appdummy.data.model.Libro
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +32,7 @@ fun PantallaListado() {
     var libros by remember {
         mutableStateOf(
             listOf(
-                LibroUI(
+                Libro(
                     id = 1,
                     titulo = "Proyecto Hail Mary",
                     autor = "Andy Weir",
@@ -42,7 +42,7 @@ fun PantallaListado() {
                     esFavorito = true,
                     leido = false
                 ),
-                LibroUI(
+                Libro(
                     id = 2,
                     titulo = "Juego de tronos",
                     autor = "George R.R. Martin",
@@ -52,7 +52,7 @@ fun PantallaListado() {
                     esFavorito = true,
                     leido = true
                 ),
-                LibroUI(
+                Libro(
                     id = 3,
                     titulo = "Festín de cuervos",
                     autor = "George R.R. Martin",
@@ -61,7 +61,7 @@ fun PantallaListado() {
                     esFavorito = false,
                     leido = false
                 ),
-                LibroUI(
+                Libro(
                     id = 4,
                     titulo = "Cementerio de Animales",
                     autor = "Stephen King",
@@ -70,7 +70,7 @@ fun PantallaListado() {
                     esFavorito = false,
                     leido = true
                 ),
-                LibroUI(
+                Libro(
                     id = 5,
                     titulo = "El juego de Ender",
                     autor = "Orson Scott Card",
@@ -188,7 +188,7 @@ fun PantallaListado() {
 }
 
 @Composable
-fun ItemLibro(libro: LibroUI, onToggleLeido: (Int) -> Unit, onToggleFavorito: (Int) -> Unit) {
+fun ItemLibro(libro: Libro, onToggleLeido: (Int) -> Unit, onToggleFavorito: (Int) -> Unit) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
