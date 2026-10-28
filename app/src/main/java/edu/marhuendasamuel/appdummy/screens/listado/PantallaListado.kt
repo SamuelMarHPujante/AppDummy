@@ -3,6 +3,7 @@ package edu.marhuendasamuel.appdummy.screens.listado
 import android.util.Patterns
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -18,6 +19,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -26,72 +29,14 @@ import edu.marhuendasamuel.appdummy.data.model.Libro
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PantallaListado() {
-    var busqueda by remember { mutableStateOf("") }
-    var autorSeleccionado by remember { mutableStateOf("Todos") }
-    var libros by remember {
-        mutableStateOf(
-            listOf(
-                Libro(
-                    id = 1,
-                    titulo = "Proyecto Hail Mary",
-                    autor = "Andy Weir",
-                    year = 2021,
-                    isbn = "9788418037016",
-                    cover = "https://covers.openlibrary.org/b/isbn/9788418037016-L.jpg",
-                    esFavorito = true,
-                    leido = false
-                ),
-                Libro(
-                    id = 2,
-                    titulo = "Juego de tronos",
-                    autor = "George R.R. Martin",
-                    year = 1996,
-                    isbn = "9780307951182",
-                    cover = "https://covers.openlibrary.org/b/isbn/9780307951182-L.jpg",
-                    esFavorito = true,
-                    leido = true
-                ),
-                Libro(
-                    id = 3,
-                    titulo = "Festín de cuervos",
-                    autor = "George R.R. Martin",
-                    year = 2005,
-                    isbn = "9780307951212",
-                    esFavorito = false,
-                    leido = false
-                ),
-                Libro(
-                    id = 4,
-                    titulo = "Cementerio de Animales",
-                    autor = "Stephen King",
-                    year = 1983,
-                    isbn = "9788401499845",
-                    esFavorito = false,
-                    leido = true
-                ),
-                Libro(
-                    id = 5,
-                    titulo = "El juego de Ender",
-                    autor = "Orson Scott Card",
-                    year = 1985,
-                    isbn = "9788498720068",
-                    esFavorito = false,
-                    leido = true
-                )
-            )
-        )
-    }
-
-    val autores = listOf("Todos") + libros.map { it.autor }.distinct().sorted()
-
-    val librosFiltrados = libros.filter { libro ->
-        val coincideBusqueda = busqueda.isBlank() ||
-                libro.titulo.contains(busqueda, ignoreCase = true)
-        val coincideGenero = autorSeleccionado == "Todos" ||
-                libro.autor == autorSeleccionado
-        coincideBusqueda && coincideGenero
-    }
+fun PantallaListado(
+    viewModel: LibrosViewModel = viewModel(factory = LibrosViewModel.Factory),
+    onNavegaADetalle: (Int) -> Unit = {}
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val busqueda by viewModel.busqueda.collectAsStateWithLifecycle()
+    val autorSeleccionado by viewModel.autorSeleccionado.collectAsStateWithLifecycle()
+    val autores by viewModel.autores.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -106,9 +51,10 @@ fun PantallaListado() {
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
+            // Barra de búsqueda
             OutlinedTextField(
                 value = busqueda,
-                onValueChange = { busqueda = it },
+                onValueChange = viewModel::actualizarBusqueda,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -116,7 +62,7 @@ fun PantallaListado() {
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 trailingIcon = {
                     AnimatedVisibility(visible = busqueda.isNotEmpty()) {
-                        IconButton(onClick = { busqueda = "" }) {
+                        IconButton(onClick = { viewModel.actualizarBusqueda("") }) {
                             Icon(Icons.Default.Clear, contentDescription = "Borrar búsqueda")
                         }
                     }
@@ -124,6 +70,7 @@ fun PantallaListado() {
                 singleLine = true
             )
 
+            // Chips de autores
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -132,53 +79,84 @@ fun PantallaListado() {
                 items(autores) { autor ->
                     FilterChip(
                         selected = autor == autorSeleccionado,
-                        onClick = { autorSeleccionado = autor },
+                        onClick = { viewModel.actualizarAutorSeleccionado(autor) },
                         label = { Text(autor) }
                     )
                 }
             }
 
-            // Resultado del filtrado
-            if (librosFiltrados.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            // when exhaustivo sobre la sealed class
+            when (val estado = uiState) {
+                is LibrosUiState.Cargando -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is LibrosUiState.Exito -> {
+                    val librosFiltrados = estado.libros.filter {
+                        val coincideBusqueda = busqueda.isBlank() || it.titulo.contains(busqueda, ignoreCase = true)
+                        val coincideGenero = autorSeleccionado == "Todos" || it.autor == autorSeleccionado
+                        coincideBusqueda && coincideGenero
+                    }
+
+                    if (librosFiltrados.isEmpty()) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(
+                                    Icons.Default.SearchOff,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(64.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    "Sin resultados para \"$busqueda\"",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        }
+                    } else {
+                        LazyVerticalGrid(
+                            contentPadding = PaddingValues(horizontal = 8.dp),
+                            columns = GridCells.Fixed(2),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(librosFiltrados, key = { it.id }) { libro ->
+                                ItemLibro(
+                                    libro = libro,
+                                    onClickItem = { onNavegaADetalle(libro.id) },
+                                    onToggleLeido = { viewModel.toggleLeido(it) },
+                                    onToggleFavorito = { viewModel.toggleFavorito(it) }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                is LibrosUiState.Error -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
                         Icon(
-                            Icons.Default.SearchOff,
+                            Icons.Default.ErrorOutline,
                             contentDescription = null,
                             modifier = Modifier.size(64.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = MaterialTheme.colorScheme.error
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            "Sin resultados para \"$busqueda\"",
-                            style = MaterialTheme.typography.bodyLarge
+                            text = estado.mensaje,
+                            color = MaterialTheme.colorScheme.error
                         )
-                    }
-                }
-            } else {
-                LazyVerticalGrid(
-                    contentPadding = PaddingValues(horizontal = 8.dp),
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(librosFiltrados, key = { it.id }) { libro ->
-                        ItemLibro(
-                            libro = libro,
-                            onToggleLeido = { id ->
-                                libros = libros.map {
-                                    if (it.id == id) it.copy(leido = !it.leido) else it
-                                }
-                            },
-                            onToggleFavorito = { id ->
-                                libros = libros.map {
-                                    if (it.id == id) it.copy(esFavorito = !it.esFavorito) else it
-                                }
-                            }
-                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(onClick = viewModel::cargarLibros) { Text("Reintentar") }
                     }
                 }
             }
@@ -188,12 +166,15 @@ fun PantallaListado() {
 }
 
 @Composable
-fun ItemLibro(libro: Libro, onToggleLeido: (Int) -> Unit, onToggleFavorito: (Int) -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+fun ItemLibro(
+    libro: Libro,
+    onClickItem: () -> Unit = {},
+    onToggleLeido: (Int) -> Unit = {},
+    onToggleFavorito: (Int) -> Unit = {}
+) {
+    Card(onClick = onClickItem, modifier = Modifier.fillMaxWidth()) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(8.dp)
         ) {
             Text(libro.titulo, style = MaterialTheme.typography.titleSmall)
             if (Patterns.WEB_URL.matcher(libro.cover).matches())
