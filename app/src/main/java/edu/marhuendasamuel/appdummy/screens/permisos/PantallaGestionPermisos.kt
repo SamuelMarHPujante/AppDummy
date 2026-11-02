@@ -1,10 +1,10 @@
-package edu.marhuendasamuel.appdummy.screens
+package edu.marhuendasamuel.appdummy.screens.permisos
 
-import androidx.annotation.experimental.Experimental
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.layout.*
@@ -37,7 +37,7 @@ fun PantallaGestionPermisos() {
     var estadoPermiso by remember {
         val concedido = ContextCompat.checkSelfPermission(
             context, Manifest.permission.CAMERA
-        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) == PackageManager.PERMISSION_GRANTED
 
         mutableStateOf(if (concedido) EstadoPermiso.Concedido else EstadoPermiso.Pendiente)
     }
