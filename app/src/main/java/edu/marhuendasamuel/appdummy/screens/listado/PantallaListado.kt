@@ -1,6 +1,5 @@
 package edu.marhuendasamuel.appdummy.screens.listado
 
-import android.util.Patterns
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -15,17 +14,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import edu.marhuendasamuel.appdummy.R
-import edu.marhuendasamuel.appdummy.data.model.Libro
+import edu.marhuendasamuel.appdummy.data.model.ItemLibro
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -163,76 +156,6 @@ fun PantallaListado(
         }
     }
 
-}
-
-@Composable
-fun ItemLibro(
-    libro: Libro,
-    onClickItem: () -> Unit = {},
-    onToggleLeido: (Int) -> Unit = {},
-    onToggleFavorito: (Int) -> Unit = {}
-) {
-    Card(onClick = onClickItem, modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(8.dp)
-        ) {
-            Text(libro.titulo, style = MaterialTheme.typography.titleSmall)
-            if (Patterns.WEB_URL.matcher(libro.cover).matches())
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(libro.cover)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = "Portada de ${libro.titulo}",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.width(200.dp)
-                )
-            else // Si no es una URL válida, se muestra una imagen por defecto
-                AsyncImage(
-                    model = R.drawable.nocover,
-                    contentDescription = "Portada de ${libro.titulo}",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.width(200.dp)
-                )
-
-            Text(
-                text = "${libro.autor} • ${libro.year}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                IconButton(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(0.5f),
-                    onClick = { onToggleLeido(libro.id) }) {
-                    Icon(
-                        imageVector = if (libro.leido) Icons.Default.BookmarkAdded
-                        else Icons.Default.BookmarkBorder,
-                        contentDescription = if (libro.leido) "Quitar leído" else "Marcar como leído",
-                        tint = if (libro.leido) MaterialTheme.colorScheme.error
-                        else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                IconButton(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(0.5f),
-                    onClick = { onToggleFavorito(libro.id) }) {
-                    Icon(
-                        imageVector = if (libro.esFavorito) Icons.Default.Favorite
-                        else Icons.Default.FavoriteBorder,
-                        contentDescription = if (libro.esFavorito) "Quitar favorito" else "Añadir favorito",
-                        tint = if (libro.esFavorito) MaterialTheme.colorScheme.error
-                        else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        }
-    }
 }
 
 @Preview(showBackground = true)
