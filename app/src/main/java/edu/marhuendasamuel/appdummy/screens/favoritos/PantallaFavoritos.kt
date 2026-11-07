@@ -49,7 +49,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.marhuendasamuel.appdummy.data.model.ItemLibro
 import edu.marhuendasamuel.appdummy.screens.listado.LibrosUiState
-import edu.marhuendasamuel.appdummy.screens.listado.PantallaListado
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
