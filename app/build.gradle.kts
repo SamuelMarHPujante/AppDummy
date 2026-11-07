@@ -7,13 +7,15 @@ plugins {
 android {
     namespace = "edu.marhuendasamuel.appdummy"
     compileSdk {
-        version = release(37)
+        version = release(36) {
+            minorApiLevel = 1
+        }
     }
 
     defaultConfig {
         applicationId = "edu.marhuendasamuel.appdummy"
-        minSdk = 24
-        targetSdk = 37
+        minSdk = 30
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -23,8 +25,7 @@ android {
     buildTypes {
         release {
             optimization {
-                enable = true
-                packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
+                enable = false
             }
         }
     }
@@ -38,27 +39,6 @@ android {
 }
 
 dependencies {
-    // ViewModel y Lifecycle
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.10.0")
-
-    // Corrutinas
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
-
-    // Testing
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
-
-    // Navigation Compose (API tipada disponible desde 2.8.0)
-    implementation("androidx.navigation:navigation-compose:2.9.8")
-
-    // Kotlin Serialization — imprescindible para las rutas @Serializable
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
-
-    // Material Icons Extended
-    implementation("io.coil-kt.coil3:coil-compose:3.5.0")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.5.0")
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
@@ -74,6 +54,42 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    // Material Icons Extended
+    implementation(libs.androidx.compose.material.icons.extended)
+
+    // Coil para la carga de imágenes
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    // ── Compose BOM ────────────────────────────────────────────────────────
+    val composeBom = platform("androidx.compose:compose-bom:2026.01.01")
+    implementation(composeBom)
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // ── Activity Compose ───────────────────────────────────────────────────
+    implementation("androidx.activity:activity-compose:1.12.3")
+
+    // ── ViewModel y Lifecycle ──────────────────────────────────────────────
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.10.0")
+
+    // ── Navigation Compose ─────────────────────────────────────────────────
+    implementation("androidx.navigation:navigation-compose:2.9.8")
+
+    // ── Kotlin Serialization (para rutas tipadas de Navigation) ────────────
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
+
+    // ── Corrutinas ─────────────────────────────────────────────────────────
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+
+    // ── Testing ────────────────────────────────────────────────────────────
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
