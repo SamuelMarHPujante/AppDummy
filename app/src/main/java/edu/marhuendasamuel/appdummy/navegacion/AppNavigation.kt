@@ -14,13 +14,9 @@ import edu.marhuendasamuel.appdummy.screens.detalle.PantallaDetalle
 import edu.marhuendasamuel.appdummy.screens.favoritos.PantallaFavoritos
 
 @Composable
-fun AppNavigation(
-    navController: NavHostController = rememberNavController()
-) {
+fun AppNavigation(navController: NavHostController = rememberNavController()) {
     Scaffold(
-        bottomBar = {
-            AppDummyBottomBar(navController = navController)
-        }
+        bottomBar = { AppDummyBottomBar(navController = navController) }
     ) { innerPadding ->
         NavHost(
             navController = navController,

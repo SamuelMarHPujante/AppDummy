@@ -78,7 +78,7 @@ fun PantallaFavoritos(
                     }
                 }
 
-                is LibrosEvento.NavegarADetalle -> {  /* TODO */
+                is LibrosEvento.NavegarADetalle -> {  /* navController.navigate(ruta tipada — ver T3) */
                 }
             }
         }
