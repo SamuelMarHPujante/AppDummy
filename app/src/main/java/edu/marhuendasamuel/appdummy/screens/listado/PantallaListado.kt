@@ -1,28 +1,14 @@
 package edu.marhuendasamuel.appdummy.screens.listado
 
-import androidx.compose.animation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import edu.marhuendasamuel.appdummy.data.model.ItemLibro
+import edu.marhuendasamuel.appdummy.screens.common.MuestraLibros
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaListado(
     viewModel: LibrosViewModel = viewModel(factory = LibrosViewModel.Factory),
@@ -52,132 +38,19 @@ fun PantallaListado(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("AppDummy") },
-                actions = {
-                    IconButton(onClick = { }) {
-                        Icon(Icons.Default.AccountCircle, contentDescription = "Perfil")
-                    }
-                }
-            )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
-            // Barra de búsqueda
-            OutlinedTextField(
-                value = busqueda,
-                onValueChange = viewModel::actualizarBusqueda,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Buscar libros...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                trailingIcon = {
-                    AnimatedVisibility(visible = busqueda.isNotEmpty()) {
-                        IconButton(onClick = { viewModel.actualizarBusqueda("") }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Borrar búsqueda")
-                        }
-                    }
-                },
-                singleLine = true
-            )
-
-            // Chips de autores
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(bottom = 8.dp)
-            ) {
-                items(autores) { autor ->
-                    FilterChip(
-                        selected = autor == autorSeleccionado,
-                        onClick = { viewModel.actualizarAutorSeleccionado(autor) },
-                        label = { Text(autor) }
-                    )
-                }
-            }
-
-            // when exhaustivo sobre la sealed class
-            when (val estado = uiState) {
-                is LibrosUiState.Cargando -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-
-                is LibrosUiState.Exito -> {
-                    val librosFiltrados = estado.libros.filter {
-                        val coincideBusqueda = busqueda.isBlank() || it.titulo.contains(busqueda, ignoreCase = true)
-                        val coincideGenero = autorSeleccionado == "Todos" || it.autor == autorSeleccionado
-                        coincideBusqueda && coincideGenero
-                    }
-
-                    if (librosFiltrados.isEmpty()) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(
-                                    Icons.Default.SearchOff,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(64.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text(
-                                    "Sin resultados para \"$busqueda\"",
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            }
-                        }
-                    } else {
-                        LazyVerticalGrid(
-                            contentPadding = PaddingValues(horizontal = 8.dp),
-                            columns = GridCells.Fixed(2),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(librosFiltrados, key = { it.id }) { libro ->
-                                ItemLibro(
-                                    libro = libro,
-                                    onClickItem = { onNavegaADetalle(libro.id) },
-                                    onToggleLeido = { viewModel.toggleLeido(libro) },
-                                    onToggleFavorito = { viewModel.toggleFavorito(libro) }
-                                )
-                            }
-                        }
-                    }
-                }
-
-                is LibrosUiState.Error -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize().padding(32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            Icons.Default.ErrorOutline,
-                            contentDescription = null,
-                            modifier = Modifier.size(64.dp),
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = estado.mensaje,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = viewModel::cargarLibros) { Text("Reintentar") }
-                    }
-                }
-            }
-        }
-    }
-
+    MuestraLibros(
+        busqueda = busqueda,
+        onBusquedaChanged = viewModel::actualizarBusqueda,
+        autores = autores,
+        autorSeleccionado = autorSeleccionado,
+        onAutorSelected = viewModel::actualizarAutorSeleccionado,
+        uiState = uiState,
+        onNavegaADetalle = onNavegaADetalle,
+        onToggleLeido = { viewModel.toggleLeido(it) },
+        onToggleFavorito = { viewModel.toggleFavorito(it) },
+        onReintentar = viewModel::cargarLibros,
+        snackbarHostState = snackbarHostState
+    )
 }
 
 @Preview(showBackground = true)
