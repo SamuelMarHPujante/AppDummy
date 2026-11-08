@@ -1,7 +1,8 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    id("org.jetbrains.kotlin.plugin.serialization") version libs.versions.kotlin apply false
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -62,34 +63,19 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
-    // ── Compose BOM ────────────────────────────────────────────────────────
-    val composeBom = platform("androidx.compose:compose-bom:2026.01.01")
-    implementation(composeBom)
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-
-    // ── Activity Compose ───────────────────────────────────────────────────
-    implementation("androidx.activity:activity-compose:1.12.3")
-
-    // ── ViewModel y Lifecycle ──────────────────────────────────────────────
+    // ViewModel y Lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.10.0")
 
-    // ── Navigation Compose ─────────────────────────────────────────────────
-    implementation("androidx.navigation:navigation-compose:2.9.8")
-
-    // ── Kotlin Serialization (para rutas tipadas de Navigation) ────────────
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
-
-    // ── Corrutinas ─────────────────────────────────────────────────────────
+    // Corrutinas
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
-    // ── Testing ────────────────────────────────────────────────────────────
-    testImplementation("junit:junit:4.13.2")
+    // Testing
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // Navigation Compose (API tipada disponible desde 2.8.0)
+    implementation("androidx.navigation:navigation-compose:2.9.8")
+
+    // Kotlin Serialization — imprescindible para las rutas @Serializable
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 }

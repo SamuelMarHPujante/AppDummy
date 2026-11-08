@@ -1,4 +1,4 @@
-package edu.marhuendasamuel.appdummy.screens.permisos
+package edu.marhuendasamuel.appdummy.screens
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable

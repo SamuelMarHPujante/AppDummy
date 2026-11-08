@@ -4,14 +4,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.toRoute
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import edu.marhuendasamuel.appdummy.screens.listado.PantallaListado
+import androidx.navigation.toRoute
 import edu.marhuendasamuel.appdummy.screens.detalle.PantallaDetalle
 import edu.marhuendasamuel.appdummy.screens.favoritos.PantallaFavoritos
+import edu.marhuendasamuel.appdummy.screens.listado.PantallaListado
 
 @Composable
 fun AppNavigation(navController: NavHostController = rememberNavController()) {

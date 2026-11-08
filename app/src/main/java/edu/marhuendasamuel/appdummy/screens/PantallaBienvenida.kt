@@ -1,4 +1,4 @@
-package edu.marhuendasamuel.appdummy
+package edu.marhuendasamuel.appdummy.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
