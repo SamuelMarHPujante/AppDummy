@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("com.google.devtools.ksp")
+    id("androidx.room")
 }
 
 android {
@@ -37,6 +39,10 @@ android {
     buildFeatures {
         compose = true
     }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 dependencies {
@@ -78,4 +84,13 @@ dependencies {
 
     // Kotlin Serialization — imprescindible para las rutas @Serializable
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
+
+    // Room — todos los artefactos deben tener la misma versión
+    implementation("androidx.room:room-runtime:2.8.4")
+    implementation("androidx.room:room-ktx:2.8.4")     // extensiones de corrutinas
+    ksp("androidx.room:room-compiler:2.8.4")           // generador de código (KSP, NO kapt)
+
+    // Testing de Room
+    testImplementation("androidx.room:room-testing:2.8.4")
+    androidTestImplementation("androidx.room:room-testing:2.8.4")
 }
