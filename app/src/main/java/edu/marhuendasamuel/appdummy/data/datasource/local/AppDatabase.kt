@@ -5,16 +5,23 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import edu.marhuendasamuel.appdummy.data.model.Genero
 import edu.marhuendasamuel.appdummy.data.model.Libro
+import edu.marhuendasamuel.appdummy.data.model.LibroGenero
 
 @Database(
-    entities = [Libro::class],
-    version = 1,
+    entities = [
+        Libro::class,
+        Genero::class,
+        LibroGenero::class
+    ],
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun libroDao(): LibrosDao
+    abstract fun generoDao(): GeneroDao
 
     companion object {
         @Volatile

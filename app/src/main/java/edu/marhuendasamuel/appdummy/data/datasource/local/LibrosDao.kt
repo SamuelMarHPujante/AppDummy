@@ -1,8 +1,11 @@
 package edu.marhuendasamuel.appdummy.data.datasource.local
 
 import androidx.room.*
+import edu.marhuendasamuel.appdummy.data.model.Genero
+import edu.marhuendasamuel.appdummy.data.model.GeneroConLibros
 import kotlinx.coroutines.flow.Flow
 import edu.marhuendasamuel.appdummy.data.model.Libro
+import edu.marhuendasamuel.appdummy.data.model.LibroGenero
 
 @Dao
 interface LibrosDao {
@@ -81,4 +84,21 @@ interface LibrosDao {
             }
         }
     }
+}
+
+@Dao
+interface GeneroDao {
+    @Transaction
+    @Query("SELECT * FROM generos ORDER BY nombre ASC")
+    fun observarGenerosConLibros(): Flow<List<GeneroConLibros>>
+
+    @Transaction
+    @Query("SELECT * FROM generos WHERE generoID = :id")
+    fun observarGeneroConLibros(id: Int): Flow<GeneroConLibros?>
+
+    @Upsert
+    suspend fun insertarGenero(genero: Genero)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertarLibros(libros: List<LibroGenero>)
 }
