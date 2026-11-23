@@ -5,14 +5,20 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import edu.marhuendasamuel.appdummy.AppDummyApplication
 import edu.marhuendasamuel.appdummy.data.repository.LibrosRepository
 import edu.marhuendasamuel.appdummy.data.model.Libro
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -21,12 +27,7 @@ sealed class LibrosEvento {
     data class NavegarADetalle(val id: Int) : LibrosEvento()
 }
 
-class LibrosViewModel(
-    private val repository: LibrosRepository
-) : ViewModel() {
-    private val _uiState = MutableStateFlow<LibrosUiState>(LibrosUiState.Cargando)
-    val uiState: StateFlow<LibrosUiState> = _uiState.asStateFlow()
-
+class LibrosViewModel(private val repository: LibrosRepository) : ViewModel() {
     private val _busqueda = MutableStateFlow("")
     val busqueda: StateFlow<String> = _busqueda.asStateFlow()
 
@@ -42,16 +43,29 @@ class LibrosViewModel(
     )
     val eventos: SharedFlow<LibrosEvento> = _eventos.asSharedFlow()
 
+    val uiState: StateFlow<LibrosUiState> = repository.observarLibros()
+        .map<List<Libro>, LibrosUiState> {
+            cargarAutores()
+            LibrosUiState.Exito(it)
+        }
+        .catch { error -> emit(LibrosUiState.Error(error.message ?: "Error")) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = LibrosUiState.Cargando
+        )
+
     init {
         cargarLibros()
         cargarAutores()
     }
 
     fun cargarLibros() {
+        /*
         viewModelScope.launch {
             _uiState.value = LibrosUiState.Cargando
             try {
-                val libros = repository.getLibros()
+                val libros = repository.observarLibros() ?: emptyList()
                 _uiState.value = LibrosUiState.Exito(libros)
             } catch (e: Exception) {
                 _uiState.value = LibrosUiState.Error(
@@ -59,34 +73,23 @@ class LibrosViewModel(
                 )
             }
         }
+        */
     }
 
     fun cargarAutores() {
         viewModelScope.launch {
-            try {
-                val autores = repository.getAutores()
-                _autores.value = listOf("Todos") + autores
-            } catch (e: Exception) {
-                _uiState.value = LibrosUiState.Error(
-                    e.message ?: "Error desconocido al cargar los autores"
-                )
-            }
+            val autores = repository.obtenerAutores() ?: emptyList()
+            _autores.value = listOf("Todos") + autores
         }
     }
 
-    fun actualizarBusqueda(texto: String) {
-        _busqueda.value = texto
-    }
+    fun actualizarAutorSeleccionado(autor: String) { _autorSeleccionado.value = autor }
+
+    fun actualizarBusqueda(texto: String) { _busqueda.value = texto }
 
     fun toggleFavorito(libro: Libro) {
-        _uiState.update { estado ->
-            if (estado is LibrosUiState.Exito) {
-                estado.copy(libros = estado.libros.map {
-                    if (it.id == libro.id) it.copy(esFavorito = !it.esFavorito) else it
-                })
-            } else estado
-        }
         viewModelScope.launch {
+            repository.toggleFavorito(libro.id)
             _eventos.emit(
                 LibrosEvento.MostrarSnackbar(
                     if (libro.esFavorito) "\"${libro.titulo}\" eliminado de favoritos"
@@ -97,14 +100,9 @@ class LibrosViewModel(
     }
 
     fun toggleLeido(libro: Libro) {
-        _uiState.update { estado ->
-            if (estado is LibrosUiState.Exito) {
-                estado.copy(libros = estado.libros.map {
-                    if (it.id == libro.id) it.copy(leido = !it.leido) else it
-                })
-            } else estado
-        }
         viewModelScope.launch {
+            // TODO: implementar la función de leído en lugar de favorito
+            repository.toggleFavorito(libro.id)
             _eventos.emit(
                 LibrosEvento.MostrarSnackbar(
                     if (libro.leido) "\"${libro.titulo}\" marcado como no leído"
@@ -114,14 +112,13 @@ class LibrosViewModel(
         }
     }
 
-    fun actualizarAutorSeleccionado(autor: String) {
-        _autorSeleccionado.value = autor
-    }
-
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                LibrosViewModel(LibrosRepository())
+                val app = checkNotNull(
+                    this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
+                ) as AppDummyApplication
+                LibrosViewModel(app.container.librosRepository)
             }
         }
     }
