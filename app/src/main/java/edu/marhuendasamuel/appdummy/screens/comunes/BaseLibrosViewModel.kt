@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.marhuendasamuel.appdummy.data.model.Libro
 import edu.marhuendasamuel.appdummy.data.repository.LibrosRepository
-import edu.marhuendasamuel.appdummy.screens.listado.LibrosUiState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 

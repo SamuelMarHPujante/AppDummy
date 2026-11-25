@@ -1,6 +1,7 @@
 package edu.marhuendasamuel.appdummy
 
 import edu.marhuendasamuel.appdummy.data.repository.LibrosRepository
+import edu.marhuendasamuel.appdummy.screens.comunes.LibrosUiState
 import edu.marhuendasamuel.appdummy.screens.listado.*
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue

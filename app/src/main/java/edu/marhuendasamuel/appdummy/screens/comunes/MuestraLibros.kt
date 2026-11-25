@@ -17,13 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import edu.marhuendasamuel.appdummy.R
 import edu.marhuendasamuel.appdummy.data.model.Libro
-import edu.marhuendasamuel.appdummy.screens.listado.LibrosUiState
+import edu.marhuendasamuel.appdummy.screens.comunes.LibrosUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,4 +1,5 @@
-package edu.marhuendasamuel.appdummy.screens.listado
+package edu.marhuendasamuel.appdummy.screens.comunes
+
 import edu.marhuendasamuel.appdummy.data.model.Libro
 
 sealed class LibrosUiState {
