@@ -1,0 +1,182 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "412f19730115a944a260943ee462963f",
+    "entities": [
+      {
+        "tableName": "libros",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `titulo` TEXT NOT NULL, `autor` TEXT NOT NULL, `year` INTEGER, `isbn` TEXT NOT NULL, `cover` TEXT, `es_favorito` INTEGER NOT NULL, `leido` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "titulo",
+            "columnName": "titulo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "autor",
+            "columnName": "autor",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "year",
+            "columnName": "year",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isbn",
+            "columnName": "isbn",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cover",
+            "columnName": "cover",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "esFavorito",
+            "columnName": "es_favorito",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "leido",
+            "columnName": "leido",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_libros_titulo",
+            "unique": false,
+            "columnNames": [
+              "titulo"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_libros_titulo` ON `${TABLE_NAME}` (`titulo`)"
+          },
+          {
+            "name": "index_libros_autor_isbn",
+            "unique": false,
+            "columnNames": [
+              "autor",
+              "isbn"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_libros_autor_isbn` ON `${TABLE_NAME}` (`autor`, `isbn`)"
+          }
+        ]
+      },
+      {
+        "tableName": "generos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`generoId` INTEGER NOT NULL, `nombre` TEXT NOT NULL, `descripcion` TEXT NOT NULL, PRIMARY KEY(`generoId`))",
+        "fields": [
+          {
+            "fieldPath": "generoId",
+            "columnName": "generoId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nombre",
+            "columnName": "nombre",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "descripcion",
+            "columnName": "descripcion",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "generoId"
+          ]
+        }
+      },
+      {
+        "tableName": "libros_generos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`libroId` TEXT NOT NULL, `generoOwnerId` INTEGER NOT NULL, `titulo` TEXT NOT NULL, `autor` TEXT NOT NULL, PRIMARY KEY(`libroId`), FOREIGN KEY(`generoOwnerId`) REFERENCES `generos`(`generoId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "libroId",
+            "columnName": "libroId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "generoOwnerId",
+            "columnName": "generoOwnerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "titulo",
+            "columnName": "titulo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "autor",
+            "columnName": "autor",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "libroId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_libros_generos_generoOwnerId",
+            "unique": false,
+            "columnNames": [
+              "generoOwnerId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_libros_generos_generoOwnerId` ON `${TABLE_NAME}` (`generoOwnerId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "generos",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "generoOwnerId"
+            ],
+            "referencedColumns": [
+              "generoId"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '412f19730115a944a260943ee462963f')"
+    ]
+  }
+}

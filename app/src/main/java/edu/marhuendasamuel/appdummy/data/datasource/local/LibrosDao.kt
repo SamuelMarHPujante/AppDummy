@@ -36,7 +36,7 @@ interface LibrosDao {
     suspend fun insertarIgnorado(libros: List<Libro>): List<Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertarReemplazo(libro: Libro)
+    suspend fun insertarReemplazando(libro: Libro)
 
     @Upsert
     suspend fun upsert(libro: Libro)
@@ -67,6 +67,9 @@ interface LibrosDao {
 
     @Query("UPDATE libros SET es_favorito = NOT es_favorito WHERE id = :id")
     suspend fun toggleFavorito(id: String)
+
+    @Query("UPDATE libros SET leido = NOT leido WHERE id = :id")
+    suspend fun toggleLeido(id: String)
 
     @Transaction
     suspend fun upsertConservandoFavorito(libros: List<Libro>) {

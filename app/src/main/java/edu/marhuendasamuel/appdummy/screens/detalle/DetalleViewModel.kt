@@ -6,13 +6,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import edu.marhuendasamuel.appdummy.AppDummyApplication
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class DetalleViewModel(
-    private val libroId: Int,
+    private val libroId: String,
     private val repository: LibrosRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<DetalleUiState>(DetalleUiState.Cargando)
@@ -24,18 +25,21 @@ class DetalleViewModel(
 
     private fun cargarDetalle() {
         viewModelScope.launch {
-            val libro = repository.getLibroPorId(libroId)
+            val libro = repository.obtenerPorId(libroId)
             _uiState.value = if (libro != null) DetalleUiState.Exito(libro)
             else DetalleUiState.NoEncontrado
         }
     }
 
     companion object {
-        fun factoryConId(id: Int): ViewModelProvider.Factory = viewModelFactory {
+        fun factoryConId(id: String): ViewModelProvider.Factory = viewModelFactory {
             initializer {
+                val app = checkNotNull(
+                    this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
+                ) as AppDummyApplication
                 DetalleViewModel(
                     libroId = id,
-                    repository = LibrosRepository()
+                    repository = app.container.librosRepository
                 )
             }
         }

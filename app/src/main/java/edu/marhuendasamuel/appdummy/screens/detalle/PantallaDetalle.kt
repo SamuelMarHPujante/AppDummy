@@ -34,9 +34,8 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaDetalle(
-    libroId: Int,
+    libroId: String,
     onVolver: () -> Unit = {},
-    onCompartir: (String) -> Unit = {},
     viewModel: DetalleViewModel = viewModel(factory = DetalleViewModel.factoryConId(libroId))
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -44,7 +43,10 @@ fun PantallaDetalle(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Detalle") },
+                title = {
+                    val titulo = (uiState as? DetalleUiState.Exito)?.libro?.titulo ?: "Detalle"
+                    Text(titulo)
+                },
                 navigationIcon = {
                     IconButton(onClick = onVolver) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")

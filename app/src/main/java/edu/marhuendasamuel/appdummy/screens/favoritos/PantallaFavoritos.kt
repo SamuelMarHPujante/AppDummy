@@ -1,6 +1,5 @@
 package edu.marhuendasamuel.appdummy.screens.favoritos
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -14,14 +13,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.marhuendasamuel.appdummy.screens.common.MuestraLibros
+import edu.marhuendasamuel.appdummy.screens.comunes.LibrosEvento
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaFavoritos(
     viewModel: FavoritosViewModel = viewModel(factory = FavoritosViewModel.Factory),
-    onNavegaADetalle: (Int) -> Unit = {}
+    onNavegaADetalle: (String) -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -42,9 +41,7 @@ fun PantallaFavoritos(
                         snackbarHostState.showSnackbar(evento.mensaje)
                     }
                 }
-
-                is LibrosEvento.NavegarADetalle -> {  /* navController.navigate(ruta tipada — ver T3) */
-                }
+                is LibrosEvento.NavegarADetalle -> {  /* navController.navigate(ruta tipada — ver T3) */ }
             }
         }
     }
@@ -59,7 +56,7 @@ fun PantallaFavoritos(
         onNavegaADetalle = onNavegaADetalle,
         onToggleLeido = { viewModel.toggleLeido(it) },
         onToggleFavorito = { viewModel.toggleFavorito(it) },
-        onReintentar = viewModel::cargarLibros,
+        onReintentar = {},
         snackbarHostState = snackbarHostState
     )
 }

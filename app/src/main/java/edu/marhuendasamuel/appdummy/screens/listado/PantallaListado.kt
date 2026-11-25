@@ -8,11 +8,12 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.marhuendasamuel.appdummy.screens.common.MuestraLibros
+import edu.marhuendasamuel.appdummy.screens.comunes.LibrosEvento
 
 @Composable
 fun PantallaListado(
     viewModel: LibrosViewModel = viewModel(factory = LibrosViewModel.Factory),
-    onNavegaADetalle: (Int) -> Unit = {}
+    onNavegaADetalle: (String) -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()

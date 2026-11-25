@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -34,7 +35,7 @@ fun MuestraLibros(
     autorSeleccionado: String,
     onAutorSelected: (String) -> Unit,
     uiState: LibrosUiState,
-    onNavegaADetalle: (Int) -> Unit,
+    onNavegaADetalle: (String) -> Unit,
     onToggleLeido: (Libro) -> Unit,
     onToggleFavorito: (Libro) -> Unit,
     onReintentar: () -> Unit,
@@ -51,6 +52,11 @@ fun MuestraLibros(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onReintentar) {
+                Icon(Icons.Default.Add, contentDescription = "Añadir")
+            }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -160,7 +166,7 @@ fun MuestraLibros(
                             color = MaterialTheme.colorScheme.error
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = onReintentar) { Text("Reintentar") }
+                        // Button(onClick = onReintentar) { Text("Reintentar") }
                     }
                 }
             }
@@ -172,8 +178,8 @@ fun MuestraLibros(
 fun ItemLibro(
     libro: Libro,
     onClickItem: () -> Unit = {},
-    onToggleLeido: (Int) -> Unit = {},
-    onToggleFavorito: (Int) -> Unit = {}
+    onToggleLeido: (String) -> Unit = {},
+    onToggleFavorito: (String) -> Unit = {}
 ) {
     Card(onClick = onClickItem, modifier = Modifier.fillMaxWidth()) {
         Column(
